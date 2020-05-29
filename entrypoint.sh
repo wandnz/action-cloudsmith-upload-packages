@@ -18,12 +18,12 @@ function upload_rpm {
     pkg_rel=`echo ${rev_filename} | cut -d '.' -f3 | rev`
     releasever="${pkg_rel:2}"
 
-    echo "cloudsmith push rpm ${CLOUDSMITH_REPO}/${distro}/${releasever} ${1}"
+    cloudsmith push rpm ${CLOUDSMITH_REPO}/${distro}/${releasever} ${1}
 }
 
 function upload_deb {
 
-    echo "cloudsmith push deb ${CLOUDSMITH_REPO}/${2}/${3} ${1}"
+    cloudsmith push deb ${CLOUDSMITH_REPO}/${2}/${3} ${1}
 }
 
 function cloudsmith_upload {
