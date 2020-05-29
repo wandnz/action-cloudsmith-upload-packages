@@ -35,7 +35,7 @@ version of the distribution.
 ## Example usage
 
 ```
-uses: wanduow/action-bintray-upload-rpm-packages@v1
+uses: wanduow/action-cloudsmtih-upload-packages@v1
 with:
   path: packages/
   repo: salcock/libtrace
