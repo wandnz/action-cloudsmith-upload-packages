@@ -38,9 +38,8 @@ version of the distribution.
 uses: wanduow/action-bintray-upload-rpm-packages@v1
 with:
   path: packages/
-  repo: LibtraceTeam/libtrace
-  license: LGPL-3.0
+  repo: salcock/libtrace
   username: libtrace-maintainer
-  api_key: ${{ secrets.BINTRAY_API_KEY }}
+  api_key: ${{ secrets.CLOUDSMITH_API_KEY }}
 ```
 
