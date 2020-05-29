@@ -1,0 +1,28 @@
+name: "Upload .deb and .rpm packages to Cloudsmith"
+description: "Upload and publish rpm packages to Cloudsmith"
+branding:
+  icon: 'upload'
+  color: 'gray-dark'
+inputs:
+  path:
+    description: "Source path of directory full of packages to upload"
+    required: true
+  repo:
+    description: "Cloudsmith repository name"
+    required: true
+  username:
+    description: "Cloudsmith username"
+    required: true
+  api_key:
+    description: "Cloudsmith API key"
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.path }}
+    - ${{ inputs.repo }}
+    - ${{ inputs.username }}
+    - ${{ inputs.api_key }}
+
+
