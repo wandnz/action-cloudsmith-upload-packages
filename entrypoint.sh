@@ -7,6 +7,10 @@ CLOUDSMITH_REPO="${2}"
 CLOUDSMITH_USERNAME="${3}"
 export CLOUDSMITH_API_KEY="${4}"
 
+# required to make python 3 work with cloudsmith script
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 function upload_rpm {
     distro=$2
     pkg_filename="$(basename "$1")"
