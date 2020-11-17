@@ -22,11 +22,11 @@ function upload_rpm {
     pkg_rel=$(echo "${rev_filename}" | cut -d '.' -f3 | rev)
     release_ver="${pkg_rel:2}"
 
-    cloudsmith push rpm "${CLOUDSMITH_REPO}/${distro}/${release_ver}" "${1}"
+    cloudsmith push rpm --republish "${CLOUDSMITH_REPO}/${distro}/${release_ver}" "${1}"
 }
 
 function upload_deb {
-    cloudsmith push deb "${CLOUDSMITH_REPO}/${2}/${3}" "${1}"
+    cloudsmith push deb --republish "${CLOUDSMITH_REPO}/${2}/${3}" "${1}"
 }
 
 function cloudsmith_upload {
