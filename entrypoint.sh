@@ -35,11 +35,11 @@ function cloudsmith_upload {
     pkg_fullpath=$3
 
     if [[ ${linux_distro} =~ centos ]]; then
-	upload_rpm "${pkg_fullpath}" "centos"
+        upload_rpm "${pkg_fullpath}" "centos"
     elif [[ ${linux_distro} =~ fedora ]]; then
-	upload_rpm "${pkg_fullpath}" "fedora"
+        upload_rpm "${pkg_fullpath}" "fedora"
     else
-	upload_deb "${pkg_fullpath}" "${linux_distro}" "${linux_release}"
+        upload_deb "${pkg_fullpath}" "${linux_distro}" "${linux_release}"
     fi
 }
 
@@ -50,6 +50,6 @@ do
     IFS=_ read -r distro release <<< "$(basename "${path}")"
     while IFS= read -r -d '' pkg
     do
-	cloudsmith_upload "${distro}" "${release}" "${pkg}"
+        cloudsmith_upload "${distro}" "${release}" "${pkg}"
     done <    <(find "${path}" -maxdepth 1 -type f -print0)
 done <   <(find "${PACKAGE_LOCATION}" -mindepth 1 -maxdepth 1 -type d -print0)
