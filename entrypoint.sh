@@ -80,9 +80,9 @@ while IFS= read -r -d '' path; do
     for pkg in "${pkgs[@]}"; do
         if [ ${i} -eq ${last} ]; then
             # wait for final package upload for each distro release to synchronise
-            echo cloudsmith_upload "sync" "${distro}" "${release}" "${pkg}"
+            cloudsmith_upload "sync" "${distro}" "${release}" "${pkg}"
         else
-            echo cloudsmith_upload "nosync" "${distro}" "${release}" "${pkg}"
+            cloudsmith_upload "nosync" "${distro}" "${release}" "${pkg}"
         fi
         ((i++))
     done
