@@ -7,15 +7,17 @@ CLOUDSMITH_REPO="${2}"
 CLOUDSMITH_USERNAME="${3}"
 export CLOUDSMITH_API_KEY="${4}"
 
-cloudsmith_push_args=(--sync-attempts 5 --wait-interval 10 --error-retry-max 15 --error-retry-backoff 2 --republish)
+cloudsmith_push_args=(--error-retry-max 30 --republish)
 
 # required to make python 3 work with cloudsmith script
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 function upload_rpm {
+    sync=$1
     distro=$2
-    pkg_filename="$(basename "$1")"
+    pkg_fullpath=$3
+    pkg_filename="$(basename "${pkg_fullpath}")"
     rev_filename=$(echo "${pkg_filename}" | rev)
 
     pkg_name=$(echo "${rev_filename}" | cut -d '-' -f3- | rev)
@@ -24,34 +26,64 @@ function upload_rpm {
     pkg_rel=$(echo "${rev_filename}" | cut -d '.' -f3 | rev)
     release_ver="${pkg_rel:2}"
 
-    cloudsmith push rpm "${cloudsmith_push_args[@]}" "${CLOUDSMITH_REPO}/${distro}/${release_ver}" "${1}"
+    sync_arg=""
+    if [ "${sync}" == "nosync" ]; then
+        sync_arg="--no-wait-for-sync"
+    fi
+
+    cloudsmith push rpm ${sync_arg} "${cloudsmith_push_args[@]}" "${CLOUDSMITH_REPO}/${distro}/${release_ver}" "${pkg_fullpath}"
 }
 
 function upload_deb {
-    cloudsmith push deb "${cloudsmith_push_args[@]}" "${CLOUDSMITH_REPO}/${2}/${3}" "${1}"
+    sync=$1
+    distro=$2
+    release=$3
+    pkg_fullpath=$4
+
+    sync_arg=""
+    if [ "${sync}" == "nosync" ]; then
+        sync_arg="--no-wait-for-sync"
+    fi
+
+    cloudsmith push deb "${sync_arg}" "${cloudsmith_push_args[@]}" "${CLOUDSMITH_REPO}/${distro}/${release}" "${pkg_fullpath}"
 }
 
 function cloudsmith_upload {
-    linux_distro=$1
-    linux_release=$2
-    pkg_fullpath=$3
+    sync=$1
+    distro=$2
+    release=$3
+    pkg_fullpath=$4
 
-    if [[ ${linux_distro} =~ centos ]]; then
-        upload_rpm "${pkg_fullpath}" "centos"
-    elif [[ ${linux_distro} =~ fedora ]]; then
-        upload_rpm "${pkg_fullpath}" "fedora"
+    if [[ ${distro} =~ centos ]]; then
+        upload_rpm "${sync}" "centos" "${pkg_fullpath}"
+    elif [[ ${distro} =~ fedora ]]; then
+        upload_rpm "${sync}" "fedora" "${pkg_fullpath}"
     else
-        upload_deb "${pkg_fullpath}" "${linux_distro}" "${linux_release}"
+        upload_deb "${sync}" "${distro}" "${release}" "${pkg_fullpath}"
     fi
 }
 
 pip3 install --upgrade cloudsmith-cli
 
-while IFS= read -r -d '' path
-do
+
+while IFS= read -r -d '' path; do
     IFS=_ read -r distro release <<< "$(basename "${path}")"
-    while IFS= read -r -d '' pkg
-    do
-        cloudsmith_upload "${distro}" "${release}" "${pkg}"
+
+    pkgs=()
+
+    while IFS= read -r -d '' pkg; do
+        pkgs+=("${pkg}")
     done <    <(find "${path}" -maxdepth 1 -type f -print0)
+
+    i=0
+    last=$((${#pkgs[@]}-1))
+    for pkg in "${pkgs[@]}"; do
+        if [ ${i} -eq ${last} ]; then
+            # wait for final package upload for each distro release to synchronise
+            echo cloudsmith_upload "sync" "${distro}" "${release}" "${pkg}"
+        else
+            echo cloudsmith_upload "nosync" "${distro}" "${release}" "${pkg}"
+        fi
+        ((i++))
+    done
 done <   <(find "${PACKAGE_LOCATION}" -mindepth 1 -maxdepth 1 -type d -print0)
