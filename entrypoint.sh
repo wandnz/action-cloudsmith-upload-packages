@@ -18,15 +18,8 @@ exec 5>&1
 
 function upload_rpm {
     distro=$1
-    pkg_fullpath=$2
-    pkg_filename="$(basename "${pkg_fullpath}")"
-    rev_filename=$(echo "${pkg_filename}" | rev)
-
-    pkg_name=$(echo "${rev_filename}" | cut -d '-' -f3- | rev)
-    pkg_version=$(echo "${rev_filename}" | cut -d '-' -f1-2 | rev | cut -d '.' -f1-3)
-    pkg_arch=$(echo "${rev_filename}" | cut -d '.' -f2 | rev)
-    pkg_rel=$(echo "${rev_filename}" | cut -d '.' -f3 | rev)
-    release_ver="${pkg_rel:2}"
+    release_ver=$2
+    pkg_fullpath=$3
 
     output=$(cloudsmith push rpm "${cloudsmith_default_args[@]}" "${CLOUDSMITH_REPO}/${distro}/${release_ver}" "${pkg_fullpath}" | tee /dev/fd/5)
     pkg_slug=$(echo "${output}" | grep "Created: ${CLOUDSMITH_REPO}" | awk '{print $2}')
@@ -70,9 +63,13 @@ function cloudsmith_upload {
     pkg_fullpath=$3
 
     if [[ ${distro} =~ centos ]]; then
-        upload_rpm "centos" "${pkg_fullpath}"
+        upload_rpm "centos" "${release}" "${pkg_fullpath}"
     elif [[ ${distro} =~ fedora ]]; then
-        upload_rpm "fedora" "${pkg_fullpath}"
+        upload_rpm "fedora" "${release}" "${pkg_fullpath}"
+    elif [[ ${distro} =~ rocky ]]; then
+        upload_rpm "rocky" "${release}" "${pkg_fullpath}"
+    elif [[ ${distro} =~ alma ]]; then
+        upload_rpm "almalinux" "${release}" "${pkg_fullpath}"
     else
         upload_deb "${distro}" "${release}" "${pkg_fullpath}"
     fi
