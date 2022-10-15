@@ -2,7 +2,7 @@
 
 Github action for uploading packages to Cloudsmith, borrowing heavily from
 Brad Cowie's action-bintray-upload-debian-packages
-(https://github.com/wanduow/action-bintray-upload-debian-packages)
+(https://github.com/wandnz/action-bintray-upload-debian-packages)
 
 ## Inputs
 
@@ -35,7 +35,7 @@ version of the distribution.
 ## Example usage
 
 ```
-uses: wanduow/action-cloudsmtih-upload-packages@v1
+uses: wandnz/action-cloudsmtih-upload-packages@v1
 with:
   path: packages/
   repo: salcock/libtrace
