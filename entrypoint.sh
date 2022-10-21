@@ -64,6 +64,8 @@ function cloudsmith_upload {
 
     releasemajor=`echo ${release} | cut -d "." -f 1`
 
+    echo "${distro} ${release}"
+
     if [[ ${distro} =~ centos ]]; then
         upload_rpm "centos" "${release}" "${pkg_fullpath}"
     elif [[ ${distro} =~ fedora ]]; then
