@@ -79,8 +79,9 @@ function cloudsmith_upload {
     fi
 }
 
-pip3 install --upgrade cloudsmith-cli
+pip3 install --user --upgrade cloudsmith-cli
 
+export PATH="$HOME/.local/bin:$PATH"
 
 while IFS= read -r -d '' path; do
     IFS=_ read -r distro release <<< "$(basename "${path}")"
