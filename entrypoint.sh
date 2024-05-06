@@ -79,7 +79,7 @@ function cloudsmith_upload {
     fi
 }
 
-pip3 install --user --upgrade cloudsmith-cli
+pipx upgrade cloudsmith-cli
 
 export PATH="$HOME/.local/bin:$PATH"
 
