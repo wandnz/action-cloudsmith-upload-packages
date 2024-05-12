@@ -1,6 +1,4 @@
-FROM ubuntu:latest
-
-RUN apt-get update && apt-get -y install curl git python3-pip
+FROM python:3
 
 COPY entrypoint.sh /entrypoint.sh
 
